@@ -20,7 +20,7 @@ $user = isset($_SESSION['mgrShortname']) ? $_SESSION['mgrShortname'] : '';
 $wdgVisibility = isset($wdgVisibility) ? $wdgVisibility : '';
 $ThisRole = isset($ThisRole) ? $ThisRole : '';
 $ThisUser = isset($ThisUser) ? $ThisUser : '';
-$version = isset($version) ? $version : 'evolution-cms/evolution';
+$version = isset($version) ? $version : 'evocms-community/evolution';
 $type = isset($type) ? $type : 'tags';
 $showButton = isset($showButton) ? $showButton : 'AdminOnly';
 $result = '';
@@ -148,7 +148,8 @@ if ($role != 1 && $wdgVisibility == 'AdminOnly') {
             $output = '';
             
             $currentVersion = $modx->getVersionData();
-            $currentMajorVersion = array_shift(explode('.', $currentVersion['version']));
+            $currentMajorVersion = explode('.', $currentVersion['version']);
+            $currentMajorVersion = array_shift($currentMajorVersion);
 
             if (!file_exists(MODX_BASE_PATH . 'assets/cache/updater/check_' . date("d") . '.json')) {
                 $ch = curl_init();
@@ -160,6 +161,8 @@ if ($role != 1 && $wdgVisibility == 'AdminOnly') {
                 curl_setopt($ch, CURLOPT_REFERER, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: updateNotify widget'));
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 4); //timeout in 4 seconds 
                 $info = curl_exec($ch);
                 curl_close($ch);
                 if (substr($info, 0, 1) != '[') {
@@ -168,7 +171,8 @@ if ($role != 1 && $wdgVisibility == 'AdminOnly') {
                 $info = json_decode($info, true);
 
                 foreach($info as $key => $val ) {
-                    if( $currentMajorVersion == array_shift(explode('.', $val['name'])) ){
+                    $names = explode('.', $val['name']);
+                    if( $currentMajorVersion == array_shift($names) ){
                         
                         $git['version'] = $val['name'];
                         
