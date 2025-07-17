@@ -58,9 +58,10 @@ if ($role != 1 && $wdgVisibility == 'AdminOnly') {
             $updateRepository = evo()->getConfig('UpgradeRepository', 'evocms-community/evolution');
             try {
             	$response = Http::get('https://api.github.com/repos/' . $updateRepository . '/releases');
-			} catch (\Exception $e) {
-				return [];
-			}
+	    } catch (\Exception $e) {
+		
+		return [];
+	    }
             if (!$response->successful() || empty($response->json())) {
 
                 return [];
